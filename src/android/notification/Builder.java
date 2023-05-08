@@ -38,6 +38,9 @@ import java.util.Random;
 import de.appplant.cordova.plugin.notification.action.Action;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
 /**
@@ -323,8 +326,14 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent deleteIntent = PendingIntent.getBroadcast(
+        PendingIntent deleteIntent;
+        if (SDK_INT >= M) {
+           deleteIntent = PendingIntent.getBroadcast(
+                context, reqCode, intent, FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+         } else {
+           deleteIntent = PendingIntent.getBroadcast(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+         }
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -352,8 +361,15 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        PendingIntent contentIntent = PendingIntent.getService(
+        PendingIntent contentIntent;
+
+        if (SDK_INT >= M) {
+           contentIntent = PendingIntent.getService(
+                context, reqCode, intent, FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+         } else {
+           contentIntent = PendingIntent.getService(
                 context, reqCode, intent, FLAG_UPDATE_CURRENT);
+         }
 
         builder.setContentIntent(contentIntent);
     }
@@ -402,8 +418,11 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        return PendingIntent.getService(
-                context, reqCode, intent, FLAG_UPDATE_CURRENT);
+        if (SDK_INT >= M) {
+           return PendingIntent.getService(
+                context, reqCode, intent, FLAG_IMMUTABLE | FLAG_UPDATE_CURRENT);
+         }
+        return PendingIntent.getService(context, reqCode, intent, FLAG_UPDATE_CURRENT);
     }
 
     /**

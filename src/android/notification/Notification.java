@@ -219,8 +219,14 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, FLAG_CANCEL_CURRENT);
+            PendingIntent pi;
+
+            if (SDK_INT >= M) {
+              pi = PendingIntent.getBroadcast(
+                   context, 0, intent, FLAG_IMMUTABLE | FLAG_CANCEL_CURRENT);
+            } else {
+              pi = PendingIntent.getBroadcast(context, 0, intent, 0);
+            }
 
             try {
                 switch (options.getPrio()) {
